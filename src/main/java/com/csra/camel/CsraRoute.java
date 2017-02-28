@@ -26,8 +26,11 @@ public class CsraRoute extends RouteBuilder {
         from("activemq:queue:TEST")
                 .to("file:/tmp/inbound?fileName=oru_r01-${date:now:yyyyMMdd}.er7");
 
-        from("imap://alerts@10.255.242.20?port=143&password=password&username=alerts@soa1.soadv.localdomain&mail.imap.auth=true&mail.imap.starttls.enable=true&unseen=false")
-                .to("activemq:queue:EmailPreProcessing");
+        from("imap://alerts@10.255.242.20?port=143&password=password&username=alerts@soa1.soadv.localdomain&mail.imap.auth=true&mail.imap.starttls.enable=true&unseen=true")
+                .to("activemq:queue:FromEssentris");
+
+        from("activemq:queue:FromEssentris")
+                .to("activemq:queue:ToGenesis");
     }
 
 }
