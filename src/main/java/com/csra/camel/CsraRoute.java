@@ -21,7 +21,7 @@ public class CsraRoute extends RouteBuilder {
         from("activemq:queue:Observation")
                 .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
                 .to("http4:10.255.242.20:8182/observation/toOru")
-                .to("activemq:queue:TEST");
+                .to("activemq:queue:ToGenesis");
 
         from("activemq:queue:TEST")
                 .to("file:/tmp/inbound?fileName=oru_r01-${date:now:yyyyMMdd}.er7");
