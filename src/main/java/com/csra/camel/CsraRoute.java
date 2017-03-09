@@ -35,11 +35,17 @@ public class CsraRoute extends RouteBuilder {
 
         from("activemq:queue:FromEssentris")
                 .multicast()
+                .pipeline()
                 .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
-                .to("http4:10.255.242.22/xalert/toFhir", "http4:10.255.242.20:8184/essentris/toOru");
+                .to("http4:10.255.242.22/xalert/toFhir")
+                .to("activemq:queue:ToGenesis")
+                .end()
 
-        from("http4:10.255.242.22/xalert/toFhir")
-                .to("activemq:queue:ToGenesis");
+                .pipeline()
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+                .to("http4:10.255.242.20:8184/essentris/toOru")
+                .to("activemq:queue:ToGenesis")
+                .end();
 
         from("http4:10.255.242.20:8184/essentris/toOru")
                 .to("activemq:queue:ToGenesis");
