@@ -5,6 +5,9 @@ import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import static org.apache.camel.builder.ProcessorBuilder.setHeader;
+
 /**
  * Created by steffen on 2/18/17.
  */
@@ -31,13 +34,14 @@ public class CsraRoute extends RouteBuilder {
                 .to("activemq:queue:FromEssentris");
 
         from("activemq:queue:FromEssentris")
+                .multicast()
                 .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
-                .to("http4:10.255.242.22/xalert/toFhir")
+                .to("http4:10.255.242.22/xalert/toFhir", "http4:10.255.242.20:8184/essentris/toOru");
+
+        from("http4:10.255.242.22/xalert/toFhir")
                 .to("activemq:queue:ToGenesis");
 
-        from("activemq:queue:FromEssentris")
-                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
-                .to("http4:10.255.242.20:8184/essentris/toOru")
+        from("http4:10.255.242.20:8184/essentris/toOru")
                 .to("activemq:queue:ToGenesis");
 
         from("activemq:queue:FromACCS")
