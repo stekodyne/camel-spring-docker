@@ -35,6 +35,11 @@ public class CsraRoute extends RouteBuilder {
                 .to("http4:10.255.242.22/xalert/toFhir")
                 .to("activemq:queue:ToGenesis");
 
+        from("activemq:queue:FromEssentris")
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+                .to("http4:10.255.242.20:8184/essentris/toOru")
+                .to("activemq:queue:ToGenesis");
+
         from("activemq:queue:FromACCS")
                 .to("activemq:queue:ToGenesis");
 
