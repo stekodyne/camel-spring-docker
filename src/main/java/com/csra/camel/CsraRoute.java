@@ -35,6 +35,9 @@ public class CsraRoute extends RouteBuilder {
                 .to("http4:10.255.242.22/xalert/toFhir")
                 .to("activemq:queue:ToGenesis");
 
+        from("activemq:queue:FromACCS")
+                .to("activemq:queue:ToGenesis");
+
         from("activemq:queue:ToGenesis")
                 .to("activemq:queue:Genesis");
     }
